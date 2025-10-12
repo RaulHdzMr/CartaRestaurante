@@ -1,0 +1,93 @@
+body {
+    background-image: url('/beans.jpg');
+    font-family: sans-serif;
+    padding: 20px;
+    color: #3e2723;
+  }
+  
+  .App {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  .menu {
+    width: 80%;
+    max-width: 500px;
+    background-color: #deb886;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 0 auto;
+  }
+  
+  .heading {
+    text-align: center;
+  }
+  
+  .heading h1 {
+    font-size: 2.5em;
+    margin-bottom: 0;
+  }
+  
+  .heading p {
+    font-style: italic;
+    margin-top: 5px;
+  }
+  
+  .top-line, .bottom-line {
+    border: 1px solid #a1887f;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .coffee-section, .desserts-section {
+    text-align: center;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  h2 {
+    font-size: 2em;
+    margin-bottom: 10px;
+  }
+  
+  .icon {
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+  }
+  
+  .menu-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    font-size: 1.1em;
+  }
+  
+  .price {
+    font-weight: bold;
+  }
+  
+  .footer {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .footer a {
+    color: #3e2723;
+    text-decoration: none;
+  }
+  
+  .footer a:hover {
+    text-decoration: underline;
+  }
+  
+  .footer p {
+    margin-top: 5px;
+  }
+  
