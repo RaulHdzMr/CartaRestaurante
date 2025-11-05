@@ -1,11 +1,6 @@
 import React from 'react';
 
-interface MenuItemProps {
-  name: string;
-  price: string;
-}
-
-const MenuItem: React.FC<MenuItemProps> = ({ name, price }) => {
+const MenuItem = ({ name, price }) => {
   return (
     <div className="menu-item">
       <p>{name}</p>

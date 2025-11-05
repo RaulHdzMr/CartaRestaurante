@@ -1,3 +1,4 @@
+import React from 'react';
 import './App.css';
 import Category from './components/Category';
 import menuData from './menu.json';
