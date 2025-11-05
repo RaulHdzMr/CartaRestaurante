@@ -7,7 +7,7 @@ const AddProductForm = ({ onAddProduct }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!productName || !price) return;
-    onAddProduct({ name: productName, price: parseFloat(price) });
+    onAddProduct({ nombre: productName, precio: parseFloat(price) });
     setProductName('');
     setPrice('');
   };

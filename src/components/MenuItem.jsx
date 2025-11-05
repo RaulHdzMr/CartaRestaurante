@@ -19,12 +19,14 @@ const MenuItem = ({ name, price, onUpdateProduct, onDeleteProduct }) => {
         />
       ) : (
         <div className="item-details">
-          <p className="item-name">{name}</p>
-          <p className="item-price">{Number(price).toFixed(2)}</p>
-          <button onClick={() => setIsEditing(true)}>Edit</button>
-          <button onClick={onDeleteProduct}>Delete</button>
+          <p className="flavor">{name}</p>
+          <p className="price">{price}</p>
         </div>
       )}
+      <div className="item-actions">
+        <button onClick={() => setIsEditing(true)}>Edit</button>
+        <button onClick={onDeleteProduct} className="delete-button">Delete</button>
+      </div>
     </div>
   );
 };

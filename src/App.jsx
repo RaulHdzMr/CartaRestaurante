@@ -1,63 +1,157 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Category from './components/Category';
-import menuData from './menu.json';
 import AddCategoryForm from './components/admin/AddCategoryForm';
 
+const API_URL = 'https://jlorenzo.ddns.net/carta_restaurante';
+const USER_ID = 7034;
+
 function App() {
-  const [menu, setMenu] = useState(menuData);
+  const [menu, setMenu] = useState([]);
 
-  const addCategory = (newCategory) => {
-    setMenu([...menu, newCategory]);
-  };
+  const fetchMenu = async () => {
+    try {
+      const categoriesResponse = await fetch(`${API_URL}/categorias/?usuario_id=${USER_ID}`);
+      const categoriesData = await categoriesResponse.json();
+      const categories = categoriesData.data || [];
 
-  const updateCategory = (originalCategoryName, updatedCategory) => {
-    setMenu(
-      menu.map((category) =>
-        category.category === originalCategoryName ? updatedCategory : category
-      )
-    );
-  };
+      const menuData = await Promise.all(
+        categories.map(async (category) => {
+          const productsResponse = await fetch(`${API_URL}/productos/${category.id}?usuario_id=${USER_ID}`);
+          const productsData = await productsResponse.json();
+          const items = productsData.data || [];
+          return { ...category, items };
+        })
+      );
 
-  const deleteCategory = (categoryName) => {
-    if (window.confirm('Are you sure you want to delete this category and all its products?')) {
-      setMenu(menu.filter((category) => category.category !== categoryName));
+      setMenu(menuData);
+    } catch (error) {
+      console.error('Error fetching menu:', error);
     }
   };
 
-  const addProduct = (categoryName, newProduct) => {
-    setMenu(
-      menu.map((category) =>
-        category.category === categoryName
-          ? { ...category, items: [...category.items, newProduct] }
-          : category
-      )
-    );
+  useEffect(() => {
+    fetchMenu();
+  }, []);
+
+  const addCategory = async (newCategoryName) => {
+    try {
+      const response = await fetch(`${API_URL}/categorias/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          usuario_id: USER_ID,
+          nombre: newCategoryName,
+        }),
+      });
+      if(response.ok) {
+        fetchMenu();
+      }
+    } catch (error) {
+      console.error('Error adding category:', error);
+    }
   };
 
-  const updateProduct = (categoryName, originalProductName, updatedProduct) => {
-    setMenu(
-      menu.map((category) =>
-        category.category === categoryName
-          ? {
-              ...category,
-              items: category.items.map((item) =>
-                item.name === originalProductName ? updatedProduct : item
-              ),
-            }
-          : category
-      )
-    );
+  const updateCategory = async (categoryId, updatedCategoryName) => {
+    try {
+      const response = await fetch(`${API_URL}/categorias/${categoryId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          usuario_id: USER_ID,
+          nombre: updatedCategoryName,
+        }),
+      });
+       if(response.ok) {
+        fetchMenu();
+      }
+    } catch (error) {
+      console.error('Error updating category:', error);
+    }
   };
 
-  const deleteProduct = (categoryName, productName) => {
-    setMenu(
-      menu.map((category) =>
-        category.category === categoryName
-          ? { ...category, items: category.items.filter((item) => item.name !== productName) }
-          : category
-      )
-    );
+  const deleteCategory = async (categoryId) => {
+    if (window.confirm('Are you sure you want to delete this category and all its products?')) {
+      try {
+        const response = await fetch(`${API_URL}/categorias/${categoryId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            usuario_id: USER_ID
+          }),
+        });
+         if(response.ok) {
+          fetchMenu();
+        }
+      } catch (error) {
+        console.error('Error deleting category:', error);
+      }
+    }
+  };
+
+  const addProduct = async (categoryId, newProduct) => {
+    try {
+      const response = await fetch(`${API_URL}/productos/${categoryId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...newProduct,
+          usuario_id: USER_ID,
+        }),
+      });
+      if(response.ok) {
+        fetchMenu();
+      }
+    } catch (error) {
+      console.error('Error adding product:', error);
+    }
+  };
+
+  const updateProduct = async (productId, updatedProduct) => {
+    try {
+      const response = await fetch(`${API_URL}/productos/${productId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            ...updatedProduct,
+            usuario_id: USER_ID,
+        }),
+      });
+      if(response.ok) {
+        fetchMenu();
+      }
+    } catch (error) {
+      console.error('Error updating product:', error);
+    }
+  };
+
+  const deleteProduct = async (categoryId, productId) => {
+    try {
+      const response = await fetch(`${API_URL}/productos/${productId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          usuario_id: USER_ID
+        }),
+      });
+       if(response.ok) {
+        fetchMenu();
+      }
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    }
   };
 
   return (
@@ -68,17 +162,17 @@ function App() {
           <p>Est. 2020</p>
         </div>
         <hr className="top-line" />
-        {menu.map((category, index) => (
+        {menu.map((category) => (
           <Category
-            key={index}
-            category={category.category}
+            key={category.id}
+            category={category.nombre}
             image={category.image}
             items={category.items}
-            onUpdateCategory={(updatedCategory) => updateCategory(category.category, updatedCategory)}
-            onDeleteCategory={deleteCategory}
-            onAddProduct={addProduct}
-            onUpdateProduct={(originalProductName, updatedProduct) => updateProduct(category.category, originalProductName, updatedProduct)}
-            onDeleteProduct={deleteProduct}
+            onUpdateCategory={(updatedCategory) => updateCategory(category.id, updatedCategory)}
+            onDeleteCategory={() => deleteCategory(category.id)}
+            onAddProduct={(newProduct) => addProduct(category.id, newProduct)}
+            onUpdateProduct={(productId, updatedProduct) => updateProduct(productId, updatedProduct)}
+            onDeleteProduct={(productId) => deleteProduct(category.id, productId)}
           />
         ))}
         <AddCategoryForm onAddCategory={addCategory} />

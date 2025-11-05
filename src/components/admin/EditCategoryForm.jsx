@@ -6,7 +6,7 @@ const EditCategoryForm = ({ category, onUpdateCategory, onCancel }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!categoryName) return;
-    onUpdateCategory({ ...category, category: categoryName });
+    onUpdateCategory(categoryName);
   };
 
   return (

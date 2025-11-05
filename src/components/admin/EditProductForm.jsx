@@ -7,7 +7,7 @@ const EditProductForm = ({ product, onUpdateProduct, onCancel }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!productName || !price) return;
-    onUpdateProduct({ ...product, name: productName, price: parseFloat(price) });
+    onUpdateProduct({ nombre: productName, precio: parseFloat(price) });
   };
 
   return (

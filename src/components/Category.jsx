@@ -31,22 +31,21 @@ const Category = ({
       ) : (
         <div className="category-header">
           <h2>{category}</h2>
-          <img src={image} className="icon" alt={`${category} icon`} />
           <button onClick={() => setIsEditing(true)}>Edit Category</button>
-          <button onClick={() => onDeleteCategory(category)} className="delete-button">Delete Category</button>
+          <button onClick={onDeleteCategory} className="delete-button">Delete Category</button>
         </div>
       )}
 
-      {items.map((item, index) => (
+      {items.map((item) => (
         <MenuItem
-          key={index}
-          name={item.name}
-          price={item.price}
-          onUpdateProduct={(updatedProduct) => onUpdateProduct(item.name, updatedProduct)}
-          onDeleteProduct={() => onDeleteProduct(category, item.name)}
+          key={item.id}
+          name={item.nombre}
+          price={item.precio}
+          onUpdateProduct={(updatedProduct) => onUpdateProduct(item.id, updatedProduct)}
+          onDeleteProduct={() => onDeleteProduct(item.id)}
         />
       ))}
-      <AddProductForm onAddProduct={(newProduct) => onAddProduct(category, newProduct)} />
+      <AddProductForm onAddProduct={onAddProduct} />
     </div>
   );
 };
