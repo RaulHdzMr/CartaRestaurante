@@ -8,6 +8,7 @@ const USER_ID = 7034;
 
 function App() {
   const [menu, setMenu] = useState([]);
+  const [editMode, setEditMode] = useState(false);
 
   const fetchMenu = async () => {
     try {
@@ -154,12 +155,19 @@ function App() {
     }
   };
 
+  const toggleEditMode = () => {
+    setEditMode(!editMode);
+  };
+
   return (
     <div className="App">
       <div className="menu">
         <div className="heading">
           <h1>CAMPER CAFE</h1>
           <p>Est. 2020</p>
+          <button onClick={toggleEditMode}>
+            {editMode ? 'Disable Edit Mode' : 'Enable Edit Mode'}
+          </button>
         </div>
         <hr className="top-line" />
         {menu.map((category) => (
@@ -168,6 +176,7 @@ function App() {
             category={category.nombre}
             image={category.image}
             items={category.items}
+            editMode={editMode}
             onUpdateCategory={(updatedCategory) => updateCategory(category.id, updatedCategory)}
             onDeleteCategory={() => deleteCategory(category.id)}
             onAddProduct={(newProduct) => addProduct(category.id, newProduct)}
@@ -175,7 +184,7 @@ function App() {
             onDeleteProduct={(productId) => deleteProduct(category.id, productId)}
           />
         ))}
-        <AddCategoryForm onAddCategory={addCategory} />
+        {editMode && <AddCategoryForm onAddCategory={addCategory} />}
         <hr className="bottom-line" />
         <div className="footer">
           <a href="#">Visit our website</a>

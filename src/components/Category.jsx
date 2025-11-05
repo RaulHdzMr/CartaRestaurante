@@ -7,6 +7,7 @@ const Category = ({
   category,
   image,
   items,
+  editMode,
   onUpdateCategory,
   onDeleteCategory,
   onAddProduct,
@@ -22,7 +23,7 @@ const Category = ({
 
   return (
     <div className={`${category.toLowerCase()}-section`}>
-      {isEditing ? (
+      {isEditing && editMode ? (
         <EditCategoryForm
           category={{ category, image, items }}
           onUpdateCategory={handleUpdateCategory}
@@ -31,8 +32,12 @@ const Category = ({
       ) : (
         <div className="category-header">
           <h2>{category}</h2>
-          <button onClick={() => setIsEditing(true)}>Edit Category</button>
-          <button onClick={onDeleteCategory} className="delete-button">Delete Category</button>
+          {editMode && (
+            <>
+              <button onClick={() => setIsEditing(true)}>Edit Category</button>
+              <button onClick={onDeleteCategory} className="delete-button">Delete Category</button>
+            </>
+          )}
         </div>
       )}
 
@@ -41,11 +46,12 @@ const Category = ({
           key={item.id}
           name={item.nombre}
           price={item.precio}
+          editMode={editMode}
           onUpdateProduct={(updatedProduct) => onUpdateProduct(item.id, updatedProduct)}
           onDeleteProduct={() => onDeleteProduct(item.id)}
         />
       ))}
-      <AddProductForm onAddProduct={onAddProduct} />
+      {editMode && <AddProductForm onAddProduct={onAddProduct} />}
     </div>
   );
 };
