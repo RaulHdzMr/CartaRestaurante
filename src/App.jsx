@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, ScrollView, TouchableOpacity, Alert, ImageBackground } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, SafeAreaView, View, Text, ScrollView, TouchableOpacity, Alert, ImageBackground, RefreshControl, Platform } from 'react-native';
 import Category from './components/Category';
 import AddCategoryForm from './components/admin/AddCategoryForm';
 import { fetchMenuData, updateCategory as apiUpdateCategory, deleteCategory as apiDeleteCategory, updateProduct as apiUpdateProduct } from './api/menuApi';
@@ -18,6 +18,7 @@ const categoryImages = {
 function App() {
   const [menu, setMenu] = useState([]);
   const [editMode, setEditMode] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchMenu = async () => {
     const menuData = await fetchMenuData();
@@ -30,6 +31,11 @@ function App() {
 
   useEffect(() => {
     fetchMenu();
+  }, []);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchMenu().then(() => setRefreshing(false));
   }, []);
 
   const getImageForCategory = (categoryName) => {
@@ -74,9 +80,11 @@ function App() {
   const handleAddCategory = async (newCategoryName) => { /* Placeholder */ };
 
   return (
-    <ImageBackground source={beansImage} style={styles.appBackground}>
+    <ImageBackground source={beansImage} style={styles.appBackground} resizeMode="cover">
       <SafeAreaView style={styles.app}>
-        <ScrollView>
+        <ScrollView
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        >
           <View style={styles.menu}>
             <View style={styles.heading}>
               <Text style={styles.title}>CAMPER CAFE</Text>
@@ -95,7 +103,7 @@ function App() {
                 editMode={editMode}
                 onUpdateCategory={(updatedName) => handleUpdateCategory(category.id, updatedName)}
                 onDeleteCategory={() => handleDeleteCategory(category.id, category.nombre)}
-                onUpdateProduct={handleUpdateProduct} // Pass the handler down
+                onUpdateProduct={handleUpdateProduct}
               />
             ))}
             {editMode && <AddCategoryForm onAddCategory={handleAddCategory} />}
@@ -110,9 +118,12 @@ function App() {
   );
 }
 
-// Styles remain the same
 const styles = StyleSheet.create({
-  appBackground: { flex: 1, resizeMode: 'cover' },
+  appBackground: {
+    flex: 1,
+    // On web, use viewport units to ensure the background always covers the full screen.
+    ...(Platform.OS === 'web' && { height: '100vh', width: '100vw' }),
+  },
   app: { flex: 1, backgroundColor: 'transparent' },
   menu: { margin: 20, padding: 20, backgroundColor: 'burlywood', borderRadius: 10 },
   heading: { alignItems: 'center' },
