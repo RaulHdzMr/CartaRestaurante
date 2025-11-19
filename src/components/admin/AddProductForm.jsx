@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
+import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 
 const AddProductForm = ({ onAddProduct }) => {
   const [productName, setProductName] = useState('');
   const [price, setPrice] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (!productName || !price) return;
     onAddProduct({ nombre: productName, precio: parseFloat(price) });
     setProductName('');
@@ -13,23 +13,42 @@ const AddProductForm = ({ onAddProduct }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h4>Add a New Product</h4>
-      <input
-        type="text"
+    <View style={styles.form}>
+      <Text style={styles.title}>Add a New Product</Text>
+      <TextInput
+        style={styles.input}
         placeholder="Product Name"
         value={productName}
-        onChange={(e) => setProductName(e.target.value)}
+        onChangeText={setProductName}
       />
-      <input
-        type="number"
+      <TextInput
+        style={styles.input}
         placeholder="Price"
         value={price}
-        onChange={(e) => setPrice(e.target.value)}
+        onChangeText={setPrice}
+        keyboardType="numeric"
       />
-      <button type="submit">Add Product</button>
-    </form>
+      <Button title="Add Product" onPress={handleSubmit} />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  form: {
+    marginVertical: 10,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+});
 
 export default AddProductForm;

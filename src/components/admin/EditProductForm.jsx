@@ -1,34 +1,68 @@
 import React, { useState } from 'react';
+import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 
-const EditProductForm = ({ product, onUpdateProduct, onCancel }) => {
-  const [productName, setProductName] = useState(product.name);
-  const [price, setPrice] = useState(product.price);
+const EditProductForm = ({ productName, productPrice, onUpdate, onCancel }) => {
+  const [name, setName] = useState(productName);
+  const [price, setPrice] = useState(String(productPrice));
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!productName || !price) return;
-    onUpdateProduct({ nombre: productName, precio: parseFloat(price) });
+  const handleSubmit = () => {
+    // Basic validation
+    if (!name || !price || isNaN(price)) {
+      alert('Please enter a valid name and price.');
+      return;
+    }
+    onUpdate({ nombre: name, precio: parseFloat(price) });
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h4>Edit Product</h4>
-      <input
-        type="text"
+    <View style={styles.formContainer}>
+      <Text style={styles.formTitle}>Edit Product</Text>
+      <TextInput
+        style={styles.input}
         placeholder="Product Name"
-        value={productName}
-        onChange={(e) => setProductName(e.target.value)}
+        value={name}
+        onChangeText={setName}
       />
-      <input
-        type="number"
-        placeholder="Price"
+      <TextInput
+        style={styles.input}
+        placeholder="Product Price"
         value={price}
-        onChange={(e) => setPrice(e.target.value)}
+        onChangeText={setPrice}
+        keyboardType="numeric"
       />
-      <button type="submit">Update</button>
-      <button type="button" onClick={onCancel}>Cancel</button>
-    </form>
+      <View style={styles.buttonGroup}>
+        <Button title="Update" onPress={handleSubmit} />
+        <Button title="Cancel" onPress={onCancel} color="#f44336" />
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  formContainer: {
+    padding: 10,
+    backgroundColor: '#fafafa',
+    borderRadius: 8,
+    marginVertical: 10,
+  },
+  formTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: 'white',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+  },
+});
 
 export default EditProductForm;

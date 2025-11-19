@@ -1,27 +1,45 @@
 import React, { useState } from 'react';
+import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 
 const AddCategoryForm = ({ onAddCategory }) => {
   const [categoryName, setCategoryName] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (!categoryName) return;
     onAddCategory(categoryName);
     setCategoryName('');
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h3>Create a New Category</h3>
-      <input
-        type="text"
+    <View style={styles.form}>
+      <Text style={styles.title}>Create a New Category</Text>
+      <TextInput
+        style={styles.input}
         placeholder="Category Name"
         value={categoryName}
-        onChange={(e) => setCategoryName(e.target.value)}
+        onChangeText={setCategoryName}
       />
-      <button type="submit">Add Category</button>
-    </form>
+      <Button title="Add Category" onPress={handleSubmit} />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  form: {
+    marginVertical: 20,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+});
 
 export default AddCategoryForm;
