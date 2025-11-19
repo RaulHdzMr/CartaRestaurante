@@ -1,21 +1,56 @@
-# Camper Cafe - Menu App (React Native)
 
-## Description
+# Camper Cafe Menu - React Native App
 
-This is a mobile application built with React Native that displays the menu for the "Camper Cafe". The app dynamically loads categories and products from a remote API. It includes an administrative "Edit Mode" that allows menu content management directly from the app's interface, with features to update and delete categories.
+![Camper Cafe](src/assets/coffee.jpg)
 
-## Features (MVP)
+Welcome to the **Camper Cafe Menu** repository, a mobile and web application built with React Native and Expo. The application displays a coffee shop's menu, organized by categories, and features an administrator mode to edit, delete, and add menu items in real-time.
 
-- **Menu Display**: Shows a list of products organized by categories.
-- **Dynamic Loading**: Fetches all menu data from an external API on startup.
-- **Edit Mode**: A toggle to enable/disable admin functionalities.
-- **Update Category**: Allows changing the name of an existing category through an inline form.
-- **Delete Category**: Allows deleting an entire category (along with its products) after a confirmation alert.
-- **Custom Design**: A themed interface with a background image and a content panel for a better user experience.
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [API Logic Abstraction](#api-logic-abstraction)
+- [Babel Configuration and Module Aliases](#babel-configuration-and-module-aliases)
+- [Installation and Usage](#installation-and-usage)
+- [Available Scripts](#available-scripts)
+
+---
+
+## Features
+
+- **Dynamic Menu**: Loads the menu from an external API.
+- **Category View**: Organizes products into categories like "Food" and "Desserts".
+- **Admin Mode**: Allows management of categories and products (CRUD).
+  - Add, edit, and delete categories.
+  - Edit products.
+- **Pull-to-Refresh**: Drag down to update the menu with the latest data.
+- **Responsive Design**:
+  - The background image adapts to any screen size.
+  - Interface compatible with mobile and web devices.
+
+---
+
+## Tech Stack
+
+- **Framework**: React Native with Expo
+- **Language**: JavaScript (ES6+)
+- **State Management**: React Hooks (`useState`, `useEffect`, `useCallback`)
+- **Navigation**: React Native native components
+- **Transpiler**: Babel
+- **Key Dependencies**:
+  - `expo`: For app development and compilation.
+  - `react`: For building the user interface.
+  - `react-native-web`: For web browser compatibility.
+  - `babel-plugin-module-resolver`: To simplify import paths.
+
+---
 
 ## Project Structure
 
-The project is organized to separate API logic, UI components, and static assets.
+The project is organized to separate the API logic, user interface components, and static assets.
 
 ```
 /src
@@ -30,48 +65,120 @@ The project is organized to separate API logic, UI components, and static assets
 |-- /components
 |   |-- /admin
 |   |   |-- AddCategoryForm.jsx
-|   |   `-- EditCategoryForm.jsx # Form for editing a category's name.
+|   |   |-- EditCategoryForm.jsx
+|   |   `-- EditProductForm.jsx
 |   |
-|   |-- Category.jsx         # Component to display a category and its products.
-|   `-- MenuItem.jsx         # Component to display a single menu item.
+|   |-- Category.jsx       # Component to display a category and its products.
+|   `-- MenuItem.jsx       # Component to display a single menu item.
 |
-`-- App.jsx                  # Main component: manages state and layout.
+`-- App.jsx                # Main component: manages state and layout.
 ```
 
-## Tech Stack
+---
 
-- **React Native**: Main framework for mobile app development.
-- **JavaScript (ES6+)**: Programming language used.
+## API Logic Abstraction
 
-## Getting Started
+A key improvement in this project was abstracting all API-related logic from the main `App.jsx` component into a dedicated module: `src/api/menuApi.js`.
+
+#### Why was this change made?
+
+Initially, the API fetch calls were made directly within the `App.jsx` component. This approach has several disadvantages as a project grows:
+
+*   **Poor Separation of Concerns:** The main component becomes responsible for both rendering the UI and handling data fetching, making it bloated and harder to read.
+*   **Low Reusability:** If another component needs to fetch the same data, the logic would have to be duplicated.
+*   **Difficult Maintenance:** Changes to the API (e.g., URL updates, new endpoints) would require hunting down and modifying code scattered throughout the UI components.
+
+By creating `menuApi.js`, we established a clear separation between the UI and the data layer.
+
+*   **`App.jsx` (The UI Layer):**
+    *   Focuses exclusively on managing component state (`menu`, `editMode`).
+    *   Renders the user interface.
+    *   Calls functions from the API module to fetch or update data, without needing to know the implementation details.
+
+*   **`menuApi.js` (The Data Layer):**
+    *   Centralizes all functions that interact with the external API (`fetch`, `POST`, `PUT`, `DELETE`).
+    *   Provides a clean and reusable set of functions (`fetchMenuData`, `updateCategory`, etc.) for the rest of the application.
+    *   Makes the code more modular, maintainable, and easier to debug.
+
+This abstraction follows best practices in software development, leading to a more robust and scalable application.
+
+---
+
+## Babel Configuration and Module Aliases
+
+The `babel.config.js` file is fundamental in the modern JavaScript ecosystem. Its main function is to configure **Babel**, the transpiler that converts modern JavaScript code (ES6+) and special syntax like JSX into a version compatible with all browsers and JavaScript environments.
+
+In this project, `babel.config.js` is used to:
+1.  **Use `babel-preset-expo`**: This is the default preset for Expo, which includes all the necessary transformations for React Native code to work correctly on iOS, Android, and the web.
+2.  **Integrate `babel-plugin-module-resolver`**: This plugin is a quality-of-life tool that allows us to clean up and simplify module import paths.
+
+### Why was `babel-plugin-module-resolver` added?
+
+As a project grows, relative paths in imports become complex and difficult to maintain. For example, to import the API from a nested component, we might have a path like:
+
+```javascript
+import { fetchMenuData } from '../../api/menuApi';
+```
+
+These paths (`../../`) are fragile and confusing. If we move the component, the path breaks.
+
+Thanks to the `module-resolver` configuration in `babel.config.js`, we have defined the `src` folder as the root (`root`) for our modules.
+
+```javascript
+// babel.config.js
+plugins: [
+  [
+    'module-resolver',
+    {
+      root: ['./src'],
+      alias: {},
+    },
+  ],
+],
+```
+
+This allows us to replace relative paths with **absolute paths** from `src`, making the code cleaner and more robust:
+
+```javascript
+// Now we can do this from anywhere in the project:
+import { fetchMenuData } from 'api/menuApi';
+```
+
+---
+
+## Installation and Usage
 
 Follow these steps to run the project in your local development environment.
 
-### Prerequisites
+1.  **Clone the repository**:
+    ```bash
+    git clone <REPOSITORY_URL>
+    cd camper-cafe-native
+    ```
 
-- Node.js and npm
-- A configured React Native development environment (Expo CLI or React Native CLI).
-
-### Installation & Running the App
-
-1.  **Clone the repository and install dependencies:**
+2.  **Install dependencies**:
     ```bash
     npm install
     ```
 
-2.  **Start the Metro development server:**
+3.  **Start the Expo development server**:
     ```bash
     npm start
     ```
 
-3.  **Run the application:**
-    - Scan the QR code with the Expo Go app on your mobile device.
-    - Or press 'a' or 'i' in the terminal to open the app in an Android or iOS simulator, respectively.
+This will open Expo Dev Tools in your browser. From there, you can choose to run the application on:
+- An Android emulator.
+- An iOS simulator.
+- Your web browser.
+- Or by scanning the QR code with the Expo Go app on your phone.
 
-## API Backend
+---
 
-The application connects to a custom backend to fetch and manage menu data. The main API endpoint is hosted at:
+## Available Scripts
 
-`https://jlorenzo.ddns.net/carta_restaurante`
+Inside the `package.json` file, you can find the following scripts:
 
-All interaction logic with this API is encapsulated in the `src/api/menuApi.js` module.
+- `npm start`: Starts the Expo development server.
+- `npm run android`: Starts the app on a connected Android emulator or device.
+- `npm run ios`: Starts the app on a connected iOS simulator or device.
+- `npm run web`: Starts the app in your web browser.
